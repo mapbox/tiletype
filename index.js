@@ -14,6 +14,9 @@ function type(buffer) {
         buffer[3] === 0x38 && (buffer[4] === 0x39 || buffer[4] === 0x37) &&
         buffer[5] === 0x61) {
         return 'gif';
+    } else if (buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46 &&
+        buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50) {
+        return 'webp';
     } else if (buffer[0] == 0x78 && buffer[1] == 0x9C) {
         return 'pbf';
     }
@@ -35,6 +38,9 @@ function headers(ext) {
         break;
     case 'gif':
         head['Content-Type'] = 'image/gif';
+        break;
+    case 'webp':
+        head['Content-Type'] = 'image/webp';
         break;
     }
     return head;
