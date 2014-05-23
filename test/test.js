@@ -32,3 +32,15 @@ tape('headers', function(t) {
     t.deepEqual({'Content-Type':'application/x-protobuf','Content-Encoding':'deflate'}, tiletype.headers('pbf'));
     t.deepEqual({}, tiletype.headers(false));
 });
+
+tape('dimensions', function(t) {
+    t.plan(8);
+    t.deepEqual([256,256], tiletype.dimensions(files.png));
+    t.deepEqual([640,400], tiletype.dimensions(fs.readFileSync(__dirname + '/fixtures/png-640x400.png')));
+    t.deepEqual([256,256], tiletype.dimensions(files.jpg));
+    t.deepEqual([640,400], tiletype.dimensions(fs.readFileSync(__dirname + '/fixtures/jpg-640x400.jpg')));
+    t.deepEqual([256,256], tiletype.dimensions(files.gif));
+    t.deepEqual([990,1050], tiletype.dimensions(fs.readFileSync(__dirname + '/fixtures/gif-990x1050.gif')));
+    t.deepEqual([256,256], tiletype.dimensions(files.webp));
+    t.deepEqual([550,368], tiletype.dimensions(fs.readFileSync(__dirname + '/fixtures/webp-550x368.webp')));
+});
