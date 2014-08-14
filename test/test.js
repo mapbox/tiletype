@@ -9,32 +9,19 @@ var files = {
     'png': fs.readFileSync(__dirname + '/fixtures/0.png'),
     'gif': fs.readFileSync(__dirname + '/fixtures/0.gif'),
     'webp': fs.readFileSync(__dirname + '/fixtures/0.webp'),
-    'pbf': fs.readFileSync(__dirname + '/fixtures/0.vector.pbf'),
     'unknown': fs.readFileSync(__dirname + '/fixtures/unknown.txt'),
 };
 
-tape('type', function(t) {
-    t.plan(6);
-    t.equal('jpg', tiletype.type(files.jpg));
-    t.equal('png', tiletype.type(files.png));
-    t.equal('gif', tiletype.type(files.gif));
-    t.equal('webp', tiletype.type(files.webp));
-    t.equal('pbf', tiletype.type(files.pbf));
-    t.equal(false, tiletype.type(files.unknown));
-});
-
-tape('headers', function(t) {
-    t.plan(6);
-    t.deepEqual({'Content-Type':'image/jpeg'}, tiletype.headers('jpg'));
-    t.deepEqual({'Content-Type':'image/png'}, tiletype.headers('png'));
-    t.deepEqual({'Content-Type':'image/gif'}, tiletype.headers('gif'));
-    t.deepEqual({'Content-Type':'image/webp'}, tiletype.headers('webp'));
-    t.deepEqual({'Content-Type':'application/x-protobuf','Content-Encoding':'deflate'}, tiletype.headers('pbf'));
-    t.deepEqual({}, tiletype.headers(false));
+tape('contentType', function(t) {
+    t.equal('image/jpeg', tiletype.contentType(files.jpg));
+    t.equal('image/png', tiletype.contentType(files.png));
+    t.equal('image/gif', tiletype.contentType(files.gif));
+    t.equal('image/webp', tiletype.contentType(files.webp));
+    t.equal(undefined, tiletype.contentType(files.unknown));
+    t.end();
 });
 
 tape('dimensions', function(t) {
-    t.plan(8);
     t.deepEqual([256,256], tiletype.dimensions(files.png));
     t.deepEqual([640,400], tiletype.dimensions(fs.readFileSync(__dirname + '/fixtures/png-640x400.png')));
     t.deepEqual([256,256], tiletype.dimensions(files.jpg));
@@ -43,4 +30,5 @@ tape('dimensions', function(t) {
     t.deepEqual([990,1050], tiletype.dimensions(fs.readFileSync(__dirname + '/fixtures/gif-990x1050.gif')));
     t.deepEqual([256,256], tiletype.dimensions(files.webp));
     t.deepEqual([550,368], tiletype.dimensions(fs.readFileSync(__dirname + '/fixtures/webp-550x368.webp')));
+    t.end();
 });
