@@ -139,25 +139,25 @@ function varint(buffer, start) {
         pos += 2;
         return {
             val: (buffer[pos] & 0x7f) | (buffer[pos + 1] << 7),
-            pos: start + pos
+            pos: pos
         };
     } else if (buffer[pos + 2] <= 0x7f) {
         pos += 3;
         return {
             val: (buffer[pos] & 0x7f) | (buffer[pos + 1] & 0x7f) << 7 | (buffer[pos + 2]) << 14,
-            pos: start + pos
+            pos: pos
         };
     } else if (buffer[pos + 3] <= 0x7f) {
         pos += 4;
         return {
             val: (buffer[pos] & 0x7f) | (buffer[pos + 1] & 0x7f) << 7 | (buffer[pos + 2] & 0x7f) << 14 | (buffer[pos + 3]) << 21,
-            pos: start + pos
+            pos: pos
         };
     } else if (buffer[pos + 4] <= 0x7f) {
         pos += 5;
         return {
             val: ((buffer[pos] & 0x7f) | (buffer[pos + 1] & 0x7f) << 7 | (buffer[pos + 2] & 0x7f) << 14 | (buffer[pos + 3]) << 21) + (buffer[pos + 4] * 268435456),
-            pos: start + pos
+            pos: pos
         };
     } else {
         throw new Error("TODO: Handle 6+ byte varints");
