@@ -23,10 +23,13 @@ function type(buffer) {
     } else if (buffer[0] == 0x1F && buffer[1] == 0x8B) {
         return 'gzip';
     // assume mapnik vector tile PBF
-    // checks that first PBF byte is 3 (layer) + wiretype 2 and
-    // first varint is wiretype 2 (message length)
-    } else if (buffer[0] == 0x1A && (varint(buffer, 1).val & 7) === 2) {
-        return 'pbf';
+    // checks that first PBF byte is 3 (layer) and
+    // first layer key is either 1 (name) or 15 (version)
+    // https://github.com/mapbox/mapnik-vector-tile/blob/master/proto/vector_tile.proto
+    } else if (buffer[0] == 0x1A) {
+        var msglength = varint(buffer, 1);
+        var layerkey = varint(buffer, msglength.pos).val >> 3;
+        if (layerkey === 15 || layerkey === 1) return 'pbf';
     }
     return false;
 }

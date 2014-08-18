@@ -12,11 +12,12 @@ var files = {
     'deflate': fs.readFileSync(__dirname + '/fixtures/0.vector.pbf.deflate'),
     'gzip': fs.readFileSync(__dirname + '/fixtures/0.vector.pbf.gz'),
     'pbf': fs.readFileSync(__dirname + '/fixtures/0.vector.pbf'),
+    'pbf2': fs.readFileSync(__dirname + '/fixtures/1.vector.pbf'),
     'unknown': fs.readFileSync(__dirname + '/fixtures/unknown.txt'),
 };
 
 tape('type', function(t) {
-    t.plan(8);
+    t.plan(9);
     t.equal('jpg', tiletype.type(files.jpg));
     t.equal('png', tiletype.type(files.png));
     t.equal('gif', tiletype.type(files.gif));
@@ -24,6 +25,7 @@ tape('type', function(t) {
     t.equal('deflate', tiletype.type(files.deflate));
     t.equal('gzip', tiletype.type(files.gzip));
     t.equal('pbf', tiletype.type(files.pbf));
+    t.equal('pbf', tiletype.type(files.pbf2));
     t.equal(false, tiletype.type(files.unknown));
 });
 
