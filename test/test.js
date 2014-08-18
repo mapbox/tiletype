@@ -9,6 +9,7 @@ var files = {
     'png': fs.readFileSync(__dirname + '/fixtures/0.png'),
     'gif': fs.readFileSync(__dirname + '/fixtures/0.gif'),
     'webp': fs.readFileSync(__dirname + '/fixtures/0.webp'),
+    'pbf': fs.readFileSync(__dirname + '/fixtures/0.vector.pbf'),
     'unknown': fs.readFileSync(__dirname + '/fixtures/unknown.txt'),
 };
 
@@ -17,6 +18,7 @@ tape('contentType', function(t) {
     t.equal('image/png', tiletype.contentType(files.png));
     t.equal('image/gif', tiletype.contentType(files.gif));
     t.equal('image/webp', tiletype.contentType(files.webp));
+    t.equal('application/x-protobuf', tiletype.contentType(files.pbf));
     t.equal(undefined, tiletype.contentType(files.unknown));
     t.end();
 });
