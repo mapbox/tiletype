@@ -19,6 +19,13 @@ function type(buffer) {
         buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50) {
         return 'webp';
     } else if (buffer[0] == 0x78 && buffer[1] == 0x9C) {
+        return 'deflate';
+    } else if (buffer[0] == 0x1F && buffer[1] == 0x8B) {
+        return 'gzip';
+    // assume mapnik vector tile PBF
+    // checks that first PBF byte is 3 (layer) + wiretype 2 and
+    // first varint is wiretype 2 (message length)
+    } else if (buffer[0] == 0x1A && (varint(buffer, 1).val & 7) === 2) {
         return 'pbf';
     }
     return false;
@@ -29,7 +36,16 @@ function headers(ext) {
     switch (ext) {
     case 'pbf':
         head['Content-Type'] = 'application/x-protobuf';
+        break;
+    // zlib deflate -- contents unknown but assumed to be mapnik vector tile PBFs
+    case 'deflate':
+        head['Content-Type'] = 'application/x-protobuf';
         head['Content-Encoding'] = 'deflate';
+        break;
+    // gzip -- contents unknown but assumed to be mapnik vector tile PBFs
+    case 'gzip':
+        head['Content-Type'] = 'application/x-protobuf';
+        head['Content-Encoding'] = 'gzip';
         break;
     case 'jpg':
         head['Content-Type'] = 'image/jpeg';
@@ -108,3 +124,39 @@ function dimensions(buffer) {
     return false;
 }
 
+function varint(buffer, start) {
+    // TODO: bounds checking
+    var pos = start;
+    if (buffer[pos] <= 0x7f) {
+        return {
+            val: buffer[pos],
+            pos: start + 1
+        };
+    } else if (buffer[pos + 1] <= 0x7f) {
+        pos += 2;
+        return {
+            val: (buffer[pos] & 0x7f) | (buffer[pos + 1] << 7),
+            pos: start + pos
+        };
+    } else if (buffer[pos + 2] <= 0x7f) {
+        pos += 3;
+        return {
+            val: (buffer[pos] & 0x7f) | (buffer[pos + 1] & 0x7f) << 7 | (buffer[pos + 2]) << 14,
+            pos: start + pos
+        };
+    } else if (buffer[pos + 3] <= 0x7f) {
+        pos += 4;
+        return {
+            val: (buffer[pos] & 0x7f) | (buffer[pos + 1] & 0x7f) << 7 | (buffer[pos + 2] & 0x7f) << 14 | (buffer[pos + 3]) << 21,
+            pos: start + pos
+        };
+    } else if (buffer[pos + 4] <= 0x7f) {
+        pos += 5;
+        return {
+            val: ((buffer[pos] & 0x7f) | (buffer[pos + 1] & 0x7f) << 7 | (buffer[pos + 2] & 0x7f) << 14 | (buffer[pos + 3]) << 21) + (buffer[pos + 4] * 268435456),
+            pos: start + pos
+        };
+    } else {
+        throw new Error("TODO: Handle 6+ byte varints");
+    }
+};
