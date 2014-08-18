@@ -1,3 +1,5 @@
+var Protobuf = require('pbf');
+
 module.exports = {};
 module.exports.type = type;
 module.exports.headers = headers;
@@ -27,9 +29,11 @@ function type(buffer) {
     // first layer key is either 1 (name) or 15 (version)
     // https://github.com/mapbox/mapnik-vector-tile/blob/master/proto/vector_tile.proto
     } else if (buffer[0] == 0x1A) {
-        var msglength = varint(buffer, 1);
-        var layerkey = varint(buffer, msglength.pos).val >> 3;
-        if (layerkey === 15 || layerkey === 1) return 'pbf';
+        var pbf = new Protobuf(buffer);
+        var msgkey = pbf.readVarint() >> 3;
+        var msglen = pbf.readVarint();
+        var layerkey = pbf.readVarint() >> 3;
+        if (msgkey === 3 && (layerkey === 15 || layerkey === 1)) return 'pbf';
     }
     return false;
 }
@@ -127,39 +131,3 @@ function dimensions(buffer) {
     return false;
 }
 
-function varint(buffer, start) {
-    // TODO: bounds checking
-    var pos = start;
-    if (buffer[pos] <= 0x7f) {
-        return {
-            val: buffer[pos],
-            pos: start + 1
-        };
-    } else if (buffer[pos + 1] <= 0x7f) {
-        pos += 2;
-        return {
-            val: (buffer[pos] & 0x7f) | (buffer[pos + 1] << 7),
-            pos: pos
-        };
-    } else if (buffer[pos + 2] <= 0x7f) {
-        pos += 3;
-        return {
-            val: (buffer[pos] & 0x7f) | (buffer[pos + 1] & 0x7f) << 7 | (buffer[pos + 2]) << 14,
-            pos: pos
-        };
-    } else if (buffer[pos + 3] <= 0x7f) {
-        pos += 4;
-        return {
-            val: (buffer[pos] & 0x7f) | (buffer[pos + 1] & 0x7f) << 7 | (buffer[pos + 2] & 0x7f) << 14 | (buffer[pos + 3]) << 21,
-            pos: pos
-        };
-    } else if (buffer[pos + 4] <= 0x7f) {
-        pos += 5;
-        return {
-            val: ((buffer[pos] & 0x7f) | (buffer[pos + 1] & 0x7f) << 7 | (buffer[pos + 2] & 0x7f) << 14 | (buffer[pos + 3]) << 21) + (buffer[pos + 4] * 268435456),
-            pos: pos
-        };
-    } else {
-        throw new Error("TODO: Handle 6+ byte varints");
-    }
-};
