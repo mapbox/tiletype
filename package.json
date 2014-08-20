@@ -1,11 +1,11 @@
 {
   "name": "tiletype",
   "description": "detect common map tile formats from a buffer",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "url": "http://github.com/mapbox/tiletype",
   "author": {
-    "name": "MapBox",
-    "url": "http://mapbox.com/",
+    "name": "Mapbox",
+    "url": "https://www.mapbox.com/",
     "email": "info@mapbox.com"
   },
   "licenses": [
