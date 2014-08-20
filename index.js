@@ -18,31 +18,40 @@ function type(buffer) {
     } else if (buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46 &&
         buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50) {
         return 'webp';
+    // deflate: recklessly assumes contents are PBF.
     } else if (buffer[0] == 0x78 && buffer[1] == 0x9C) {
+        return 'pbf';
+    // gzip: recklessly assumes contents are PBF.
+    } else if (buffer[0] == 0x1F && buffer[1] == 0x8B) {
         return 'pbf';
     }
     return false;
 }
 
-function headers(ext) {
+function headers(buffer) {
     var head = {};
-    switch (ext) {
-    case 'pbf':
+    if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E &&
+        buffer[3] === 0x47 && buffer[4] === 0x0D && buffer[5] === 0x0A &&
+        buffer[6] === 0x1A && buffer[7] === 0x0A) {
+        head['Content-Type'] = 'image/png';
+    } else if (buffer[0] === 0xFF && buffer[1] === 0xD8 &&
+        buffer[buffer.length - 2] === 0xFF && buffer[buffer.length - 1] === 0xD9) {
+        head['Content-Type'] = 'image/jpeg';
+    } else if (buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46 &&
+        buffer[3] === 0x38 && (buffer[4] === 0x39 || buffer[4] === 0x37) &&
+        buffer[5] === 0x61) {
+        head['Content-Type'] = 'image/gif';
+    } else if (buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46 &&
+        buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50) {
+        head['Content-Type'] = 'image/webp';
+    // deflate: recklessly assumes contents are PBF.
+    } else if (buffer[0] == 0x78 && buffer[1] == 0x9C) {
         head['Content-Type'] = 'application/x-protobuf';
         head['Content-Encoding'] = 'deflate';
-        break;
-    case 'jpg':
-        head['Content-Type'] = 'image/jpeg';
-        break;
-    case 'png':
-        head['Content-Type'] = 'image/png';
-        break;
-    case 'gif':
-        head['Content-Type'] = 'image/gif';
-        break;
-    case 'webp':
-        head['Content-Type'] = 'image/webp';
-        break;
+    // gzip: recklessly assumes contents are PBF.
+    } else if (buffer[0] == 0x1F && buffer[1] == 0x8B) {
+        head['Content-Type'] = 'application/x-protobuf';
+        head['Content-Encoding'] = 'gzip';
     }
     return head;
 }
