@@ -1,56 +1,27 @@
-module.exports = {};
-module.exports.type = type;
-module.exports.headers = headers;
-module.exports.dimensions = dimensions;
-
-function type(buffer) {
+exports.contentType = function(buffer) {
     if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E &&
         buffer[3] === 0x47 && buffer[4] === 0x0D && buffer[5] === 0x0A &&
         buffer[6] === 0x1A && buffer[7] === 0x0A) {
-        return 'png';
+        return 'image/png';
     } else if (buffer[0] === 0xFF && buffer[1] === 0xD8 &&
         buffer[buffer.length - 2] === 0xFF && buffer[buffer.length - 1] === 0xD9) {
-        return 'jpg';
+        return 'image/jpeg';
     } else if (buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46 &&
         buffer[3] === 0x38 && (buffer[4] === 0x39 || buffer[4] === 0x37) &&
         buffer[5] === 0x61) {
-        return 'gif';
+        return 'image/gif';
     } else if (buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46 &&
         buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50) {
-        return 'webp';
+        return 'image/webp';
     } else if (buffer[0] == 0x78 && buffer[1] == 0x9C) {
-        return 'pbf';
+        return 'application/x-protobuf';
     }
-    return false;
-}
+};
 
-function headers(ext) {
-    var head = {};
-    switch (ext) {
-    case 'pbf':
-        head['Content-Type'] = 'application/x-protobuf';
-        head['Content-Encoding'] = 'deflate';
-        break;
-    case 'jpg':
-        head['Content-Type'] = 'image/jpeg';
-        break;
-    case 'png':
-        head['Content-Type'] = 'image/png';
-        break;
-    case 'gif':
-        head['Content-Type'] = 'image/gif';
-        break;
-    case 'webp':
-        head['Content-Type'] = 'image/webp';
-        break;
-    }
-    return head;
-}
-
-function dimensions(buffer) {
+exports.dimensions = function(buffer) {
     var mp28 = Math.pow(2,8);
-    switch (type(buffer)) {
-    case 'png':
+    switch (exports.contentType(buffer)) {
+    case 'image/png':
         var i = 8;
         while (i < buffer.length) {
             var length = buffer.readUInt32BE(i);
@@ -68,7 +39,7 @@ function dimensions(buffer) {
             i += length + 4;
         }
         break;
-    case 'jpg':
+    case 'image/jpeg':
         var i = 2;
         while (i < buffer.length) {
             // Invalid chunk.
@@ -86,12 +57,12 @@ function dimensions(buffer) {
             i += 2 + length;
         }
         break;
-    case 'gif':
+    case 'image/gif':
         var w = (buffer[7]*Math.pow(2,8)) + buffer[6];
         var h = (buffer[9]*Math.pow(2,8)) + buffer[8];
         return [w,h];
         break;
-    case 'webp':
+    case 'image/webp':
         var i = 12;
         var chunktype = buffer.toString('ascii', i, i + 4);
         if (chunktype === 'VP8 ') {
@@ -102,9 +73,6 @@ function dimensions(buffer) {
             var h = (buffer[i+6]*Math.pow(2,8)) + buffer[i+5];
             return [w,h];
         }
-        return false;
         break;
     }
-    return false;
-}
-
+};
