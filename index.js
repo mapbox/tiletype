@@ -1,3 +1,5 @@
+var Protobuf = require('pbf');
+
 module.exports = {};
 module.exports.type = type;
 module.exports.headers = headers;
@@ -19,7 +21,19 @@ function type(buffer) {
         buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50) {
         return 'webp';
     } else if (buffer[0] == 0x78 && buffer[1] == 0x9C) {
-        return 'pbf';
+        return 'deflate';
+    } else if (buffer[0] == 0x1F && buffer[1] == 0x8B) {
+        return 'gzip';
+    // assume mapnik vector tile PBF
+    // checks that first PBF byte is 3 (layer) and
+    // first layer key is either 1 (name) or 15 (version)
+    // https://github.com/mapbox/mapnik-vector-tile/blob/master/proto/vector_tile.proto
+    } else if (buffer[0] == 0x1A) {
+        var pbf = new Protobuf(buffer);
+        var msgkey = pbf.readVarint() >> 3;
+        var msglen = pbf.readVarint();
+        var layerkey = pbf.readVarint() >> 3;
+        if (msgkey === 3 && (layerkey === 15 || layerkey === 1)) return 'pbf';
     }
     return false;
 }
@@ -29,7 +43,16 @@ function headers(ext) {
     switch (ext) {
     case 'pbf':
         head['Content-Type'] = 'application/x-protobuf';
+        break;
+    // zlib deflate -- contents unknown but assumed to be mapnik vector tile PBFs
+    case 'deflate':
+        head['Content-Type'] = 'application/x-protobuf';
         head['Content-Encoding'] = 'deflate';
+        break;
+    // gzip -- contents unknown but assumed to be mapnik vector tile PBFs
+    case 'gzip':
+        head['Content-Type'] = 'application/x-protobuf';
+        head['Content-Encoding'] = 'gzip';
         break;
     case 'jpg':
         head['Content-Type'] = 'image/jpeg';
