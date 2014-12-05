@@ -21,6 +21,9 @@
   "scripts": {
     "test": "node test/test.js"
   },
+  "bin": {
+    "tiletype": "bin/tiletype.js"
+  },
   "engines": {
     "node": "0.8.x || 0.10.x"
   }
