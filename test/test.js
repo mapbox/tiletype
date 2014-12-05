@@ -3,6 +3,8 @@ var assert = require('assert');
 var tape = require('tape');
 var path = require('path');
 var fs = require('fs');
+var exec = require('child_process').exec;
+var cmd = path.resolve(__dirname, '..', 'bin', 'tiletype.js');
 
 var files = {
     'jpg': fs.readFileSync(__dirname + '/fixtures/0.jpeg'),
@@ -46,4 +48,31 @@ tape('dimensions', function(t) {
     t.deepEqual([256,256], tiletype.dimensions(files.webp));
     t.deepEqual([550,368], tiletype.dimensions(fs.readFileSync(__dirname + '/fixtures/webp-550x368.webp')));
     t.end();
+});
+
+tape('executable: success', function(t) {
+    exec(cmd + ' ' + path.resolve(__dirname + '/fixtures/0.vector.pbf'), function(err, stdout, stderr) {
+        t.ifError(err, 'detected');
+        t.equal(stdout, 'pbf\n', 'determined type');
+        t.notOk(stderr, 'no stderr');
+        t.end();
+    });
+});
+
+tape('executable: unknown', function(t) {
+    exec(cmd + ' ' + path.resolve(__dirname + '/fixtures/unknown.txt'), function(err, stdout, stderr) {
+        t.equal(err.code, 3, 'exit 3');
+        t.notOk(stdout, 'no stdout');
+        t.equal(stderr, 'Could not determine tile type\n', 'expected stderr');
+        t.end();
+    });
+});
+
+tape('executable: no file', function(t) {
+    exec(cmd, function(err, stdout, stderr) {
+        t.equal(err.code, 1, 'exit 1');
+        t.notOk(stdout, 'no stdout');
+        t.equal(stderr, 'Error: ENOENT, open \'\'\n', 'expected stderr');
+        t.end();
+    });
 });
