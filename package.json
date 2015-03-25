@@ -14,17 +14,24 @@
     }
   ],
   "devDependencies": {
-    "tape": "2.13.x",
-    "benchmark": "1.0.x"
+    "benchmark": "1.0.x",
+    "dox": "^0.7.0",
+    "doxme": "^1.8.2",
+    "tape": "2.13.x"
   },
   "main": "./index.js",
   "scripts": {
-    "test": "node test/test.js"
+    "test": "node test/test.js",
+    "doc": "dox -r < index.js | doxme --readme > README.md"
   },
   "bin": {
     "tiletype": "bin/tiletype.js"
   },
   "engines": {
     "node": "0.8.x || 0.10.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:mapbox/tiletype.git"
   }
 }

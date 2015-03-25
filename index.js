@@ -3,6 +3,20 @@ module.exports.type = type;
 module.exports.headers = headers;
 module.exports.dimensions = dimensions;
 
+/**
+ * Given a buffer of unknown data, return either a format as an extension
+ * string or false if the type cannot be determined.
+ *
+ * Potential options are:
+ *
+ * * png
+ * * pbf
+ * * jpg
+ * * webp
+ *
+ * @param {Buffer} buffer input
+ * @returns {String|boolean} identifier
+ */
 function type(buffer) {
     if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E &&
         buffer[3] === 0x47 && buffer[4] === 0x0D && buffer[5] === 0x0A &&
@@ -19,15 +33,22 @@ function type(buffer) {
         buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50) {
         return 'webp';
     // deflate: recklessly assumes contents are PBF.
-    } else if (buffer[0] == 0x78 && buffer[1] == 0x9C) {
+    } else if (buffer[0] === 0x78 && buffer[1] === 0x9C) {
         return 'pbf';
     // gzip: recklessly assumes contents are PBF.
-    } else if (buffer[0] == 0x1F && buffer[1] == 0x8B) {
+    } else if (buffer[0] === 0x1F && buffer[1] === 0x8B) {
         return 'pbf';
     }
     return false;
 }
 
+/**
+ * Return headers - Content-Type and Content-Encoding -
+ * for a response containing this kind of image.
+ *
+ * @param {Buffer} buffer input
+ * @returns {Object} headers
+ */
 function headers(buffer) {
     var head = {};
     if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E &&
@@ -45,17 +66,24 @@ function headers(buffer) {
         buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50) {
         head['Content-Type'] = 'image/webp';
     // deflate: recklessly assumes contents are PBF.
-    } else if (buffer[0] == 0x78 && buffer[1] == 0x9C) {
+    } else if (buffer[0] === 0x78 && buffer[1] === 0x9C) {
         head['Content-Type'] = 'application/x-protobuf';
         head['Content-Encoding'] = 'deflate';
     // gzip: recklessly assumes contents are PBF.
-    } else if (buffer[0] == 0x1F && buffer[1] == 0x8B) {
+    } else if (buffer[0] === 0x1F && buffer[1] === 0x8B) {
         head['Content-Type'] = 'application/x-protobuf';
         head['Content-Encoding'] = 'gzip';
     }
     return head;
 }
 
+/**
+ * Determine the width and height of an image contained in a buffer,
+ * returned as a [x, y] array.
+ *
+ * @param {Buffer} buffer input
+ * @param {Array|boolean} dimensions
+ */
 function dimensions(buffer) {
     var mp28 = Math.pow(2,8);
     switch (type(buffer)) {
