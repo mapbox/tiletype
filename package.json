@@ -27,9 +27,6 @@
   "bin": {
     "tiletype": "bin/tiletype.js"
   },
-  "engines": {
-    "node": "0.8.x || 0.10.x"
-  },
   "repository": {
     "type": "git",
     "url": "git@github.com:mapbox/tiletype.git"
