@@ -14,15 +14,19 @@ var files = {
     'pbf': fs.readFileSync(__dirname + '/fixtures/0.vector.pbf'),
     'pbfz': fs.readFileSync(__dirname + '/fixtures/0.vector.pbfz'),
     'unknown': fs.readFileSync(__dirname + '/fixtures/unknown.txt'),
+    'webpLossless': fs.readFileSync(__dirname + '/fixtures/tux.webp'),
+    'webpExtended': fs.readFileSync(__dirname + '/fixtures/tux_alpha.webp')
 };
 
 tape('type', function(t) {
-    t.equal('jpg', tiletype.type(files.jpg));
-    t.equal('png', tiletype.type(files.png));
-    t.equal('gif', tiletype.type(files.gif));
-    t.equal('webp', tiletype.type(files.webp));
-    t.equal('pbf', tiletype.type(files.pbf));
-    t.equal('pbf', tiletype.type(files.pbfz));
+    t.equal('jpg', tiletype.type(files.jpg), 'jpg');
+    t.equal('png', tiletype.type(files.png), 'png');
+    t.equal('gif', tiletype.type(files.gif), 'gif');
+    t.equal('webp', tiletype.type(files.webp), 'webp');
+    t.equal('webp', tiletype.type(files.webpLossless), 'webpLossless');
+    t.equal('webp', tiletype.type(files.webpExtended), 'webpExtended');
+    t.equal('pbf', tiletype.type(files.pbf), 'pbf');
+    t.equal('pbf', tiletype.type(files.pbfz), 'pbf');
     t.equal(false, tiletype.type(files.unknown));
     t.end();
 });
@@ -47,6 +51,9 @@ tape('dimensions', function(t) {
     t.deepEqual([990,1050], tiletype.dimensions(fs.readFileSync(__dirname + '/fixtures/gif-990x1050.gif')));
     t.deepEqual([256,256], tiletype.dimensions(files.webp));
     t.deepEqual([550,368], tiletype.dimensions(fs.readFileSync(__dirname + '/fixtures/webp-550x368.webp')));
+
+    t.deepEqual([386,395], tiletype.dimensions(files.webpLossless));
+    t.deepEqual([386,395], tiletype.dimensions(files.webpExtended));
     t.end();
 });
 
