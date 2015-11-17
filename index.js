@@ -129,14 +129,23 @@ function dimensions(buffer) {
         return [w,h];
         break;
     case 'webp':
-        var i = 12;
-        var chunktype = buffer.toString('ascii', i, i + 4);
+        var chunktype = buffer.toString('ascii', 12, 16);
         if (chunktype === 'VP8 ') {
-            i = 23;
             // Invalid chunk.
-            if (buffer[i] !== 0x9d || buffer[i+1] !== 0x01 || buffer[i+2] !== 0x2a) return false;
-            var w = (buffer[i+4]*Math.pow(2,8)) + buffer[i+3];
-            var h = (buffer[i+6]*Math.pow(2,8)) + buffer[i+5];
+            if (buffer[23] !== 0x9d || buffer[24] !== 0x01 || buffer[25] !== 0x2a) return false;
+            var w = buffer[26] | (buffer[27] << 8);
+            var h = buffer[28] | (buffer[29] << 8);
+            return [w,h];
+        }
+        else if (chunktype === 'VP8L') {
+            var w = 1 + (buffer[21] | (buffer[22] & 0x3F) << 8);
+            var h = 1 + (((buffer[22] & 0xC0) >> 6) | (buffer[23] << 2) | ((buffer[24] & 0xF) << 10));
+            return [w,h];
+        }
+        else  if (chunktype === 'VP8X') {
+            var w = 1 + (buffer[24] | buffer[25] << 8 | buffer[26] << 16);
+            var h = 1 + (buffer[27] | buffer[28] << 8 | buffer[29] << 16);
+
             return [w,h];
         }
         return false;

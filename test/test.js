@@ -47,6 +47,9 @@ tape('dimensions', function(t) {
     t.deepEqual([990,1050], tiletype.dimensions(fs.readFileSync(__dirname + '/fixtures/gif-990x1050.gif')));
     t.deepEqual([256,256], tiletype.dimensions(files.webp));
     t.deepEqual([550,368], tiletype.dimensions(fs.readFileSync(__dirname + '/fixtures/webp-550x368.webp')));
+
+    t.deepEqual([386,395], tiletype.dimensions(fs.readFileSync(__dirname + '/fixtures/tux.webp')));
+    t.deepEqual([386,395], tiletype.dimensions(fs.readFileSync(__dirname + '/fixtures/tux_alpha.webp')));
     t.end();
 });
 
