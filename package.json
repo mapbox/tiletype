@@ -19,11 +19,13 @@
     "doxme": "^1.8.2",
     "istanbul": "~0.3.17",
     "coveralls": "~2.11.2",
-    "tape": "2.13.x"
+    "tape": "2.13.x",
+    "eslint": "~1.00.0",
+    "eslint-config-unstyled": "^1.1.0"
   },
   "main": "./index.js",
   "scripts": {
-    "test": "node test/test.js",
+    "test": "eslint index.js && node test/test.js",
     "doc": "dox -r < index.js | doxme --readme > README.md",
     "coverage": "istanbul cover tape test/*test.js && coveralls < ./coverage/lcov.info"
   },
