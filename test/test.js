@@ -79,7 +79,8 @@ tape('executable: no file', function(t) {
     exec(cmd, function(err, stdout, stderr) {
         t.equal(err.code, 1, 'exit 1');
         t.notOk(stdout, 'no stdout');
-        t.equal(stderr, 'Error: ENOENT, open \'\'\n', 'expected stderr');
+        t.ok(stderr === 'Error: ENOENT, open \'\'\n' ||
+             stderr === 'Error: ENOENT: no such file or directory, open \'\'\n', 'expected stderr');
         t.end();
     });
 });
