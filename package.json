@@ -1,5 +1,5 @@
 {
-  "name": "tiletype",
+  "name": "@mapbox/tiletype",
   "description": "detect common map tile formats from a buffer",
   "version": "0.3.0",
   "url": "http://github.com/mapbox/tiletype",
