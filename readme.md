@@ -66,7 +66,7 @@ returned as a [x, y] array.
 Requires [nodejs](http://nodejs.org/).
 
 ```sh
-$ npm install tiletype
+$ npm install @mapbox/tiletype
 ```
 
 ## Tests
