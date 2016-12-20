@@ -1,9 +1,11 @@
 /// <reference types="node" />
 
-interface Header {
+export interface Header {
   'Content-Type'?: string
   'Content-Encoding'?: string
 }
+
+export type extensions = 'png' | 'pbf' | 'jpg' | 'webp'
 
 /**
  * Given a buffer of unknown data, return either a format as an extension
@@ -19,7 +21,7 @@ interface Header {
  * @param {Buffer} buffer input
  * @returns {String|boolean} identifier
  */
-export function type(buffer: Buffer): string | boolean
+export function type(buffer: Buffer): extensions | boolean
 
 /**
  * Return headers - Content-Type and Content-Encoding -
@@ -37,4 +39,4 @@ export function headers(buffer: Buffer): Header
  * @param {Buffer} buffer input
  * @returns {Array<number>|boolean} dimensions
  */
-export function dimensions(buffer: Buffer): Array<number> | boolean
+export function dimensions(buffer: Buffer): [number, number] | boolean
