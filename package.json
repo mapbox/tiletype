@@ -21,17 +21,21 @@
     "coveralls": "~2.11.2",
     "tape": "2.13.x",
     "eslint": "~1.00.0",
-    "eslint-config-unstyled": "^1.1.0"
+    "eslint-config-unstyled": "^1.1.0",
+    "@types/node": "^6.0.52",
+    "typescript": "^2.1.4"
   },
   "main": "./index.js",
   "scripts": {
     "test": "eslint index.js && node test/test.js",
     "doc": "dox -r < index.js | doxme --readme > README.md",
-    "coverage": "istanbul cover tape test/*test.js && coveralls < ./coverage/lcov.info"
+    "coverage": "istanbul cover tape test/*test.js && coveralls < ./coverage/lcov.info",
+    "types": "tsc test/types.ts"
   },
   "bin": {
     "tiletype": "bin/tiletype.js"
   },
+  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "git@github.com:mapbox/tiletype.git"
