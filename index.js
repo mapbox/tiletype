@@ -82,7 +82,7 @@ function headers(buffer) {
  * returned as a [x, y] array.
  *
  * @param {Buffer} buffer input
- * @param {Array|boolean} dimensions
+ * @returns {Array<number>|boolean} dimensions
  */
 function dimensions(buffer) {
     var mp28 = Math.pow(2,8);
