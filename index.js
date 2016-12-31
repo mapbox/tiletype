@@ -5,7 +5,7 @@ module.exports.dimensions = dimensions;
 
 /**
  * Given a buffer of unknown data, return either a format as an extension
- * string or false if the type cannot be determined.
+ * string or undefined if the type cannot be determined.
  *
  * Potential options are:
  *
@@ -15,7 +15,7 @@ module.exports.dimensions = dimensions;
  * * webp
  *
  * @param {Buffer} buffer input
- * @returns {String|boolean} identifier
+ * @returns {String} identifier
  */
 function type(buffer) {
     if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E &&
@@ -39,7 +39,7 @@ function type(buffer) {
     } else if (buffer[0] === 0x1F && buffer[1] === 0x8B) {
         return 'pbf';
     }
-    return false;
+    return undefined;
 }
 
 /**
@@ -51,6 +51,7 @@ function type(buffer) {
  */
 function headers(buffer) {
     var head = {};
+    if (!buffer) { return head; }
     if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E &&
         buffer[3] === 0x47 && buffer[4] === 0x0D && buffer[5] === 0x0A &&
         buffer[6] === 0x1A && buffer[7] === 0x0A) {
@@ -82,7 +83,7 @@ function headers(buffer) {
  * returned as a [x, y] array.
  *
  * @param {Buffer} buffer input
- * @returns {Array<number>|boolean} dimensions
+ * @returns {Array<number>} dimensions
  */
 function dimensions(buffer) {
     var mp28 = Math.pow(2,8);
@@ -93,7 +94,7 @@ function dimensions(buffer) {
             var length = buffer.readUInt32BE(i);
             var chunktype = buffer.toString('ascii', i + 4, i + 8);
             // Invalid chunk.
-            if (!(length || chunktype === 'IEND')) return false;
+            if (!(length || chunktype === 'IEND')) return undefined;
             // Length + type.
             i += 8;
             if (chunktype === 'IHDR') {
@@ -109,12 +110,12 @@ function dimensions(buffer) {
         var i = 2;
         while (i < buffer.length) {
             // Invalid chunk.
-            if (buffer[i] !== 0xff) return false;
+            if (buffer[i] !== 0xff) return undefined;
             var chunktype = buffer[i+1];
             var length = (buffer[i+2]*mp28) + (buffer[i+3]);
             // Entropy-encoded begins after this chunk. Bail.
             if (chunktype === 0xda) {
-                return false;
+                return undefined;
             } else if (chunktype === 0xc0) {
                 var h = (buffer[i+5]*Math.pow(2,8)) + buffer[i+6];
                 var w = (buffer[i+7]*Math.pow(2,8)) + buffer[i+8];
@@ -132,7 +133,7 @@ function dimensions(buffer) {
         var chunktype = buffer.toString('ascii', 12, 16);
         if (chunktype === 'VP8 ') {
             // Invalid chunk.
-            if (buffer[23] !== 0x9d || buffer[24] !== 0x01 || buffer[25] !== 0x2a) return false;
+            if (buffer[23] !== 0x9d || buffer[24] !== 0x01 || buffer[25] !== 0x2a) return undefined;
             var w = buffer[26] | (buffer[27] << 8);
             var h = buffer[28] | (buffer[29] << 8);
             return [w,h];
@@ -148,9 +149,9 @@ function dimensions(buffer) {
 
             return [w,h];
         }
-        return false;
+        return undefined;
         break;
     }
-    return false;
+    return undefined;
 }
 
