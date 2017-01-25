@@ -27,7 +27,7 @@ tape('type', function(t) {
     t.equal('webp', tiletype.type(files.webpExtended), 'webpExtended');
     t.equal('pbf', tiletype.type(files.pbf), 'pbf');
     t.equal('pbf', tiletype.type(files.pbfz), 'pbf');
-    t.equal(false, tiletype.type(files.unknown));
+    t.equal(undefined, tiletype.type(files.unknown));
     t.end();
 });
 
@@ -38,7 +38,7 @@ tape('headers', function(t) {
     t.deepEqual({'Content-Type':'image/webp'}, tiletype.headers(files.webp));
     t.deepEqual({'Content-Type':'application/x-protobuf','Content-Encoding':'deflate'}, tiletype.headers(files.pbf));
     t.deepEqual({'Content-Type':'application/x-protobuf','Content-Encoding':'gzip'}, tiletype.headers(files.pbfz));
-    t.deepEqual({}, tiletype.headers(false));
+    t.deepEqual({}, tiletype.headers(undefined));
     t.end();
 });
 

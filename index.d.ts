@@ -19,9 +19,9 @@ export type extensions = 'png' | 'pbf' | 'jpg' | 'webp'
  * * webp
  *
  * @param {Buffer} buffer input
- * @returns {String|boolean} identifier
+ * @returns {String} identifier
  */
-export function type(buffer: Buffer): extensions | boolean
+export function type(buffer: Buffer): extensions
 
 /**
  * Return headers - Content-Type and Content-Encoding -
@@ -37,6 +37,6 @@ export function headers(buffer: Buffer): Header
  * returned as a [x, y] array.
  *
  * @param {Buffer} buffer input
- * @returns {Array<number>|boolean} dimensions
+ * @returns {Array<number>} dimensions
  */
-export function dimensions(buffer: Buffer): [number, number] | boolean
+export function dimensions(buffer: Buffer): [number, number]
