@@ -1,6 +1,6 @@
 # tiletype
 
-[![build status](https://secure.travis-ci.org/mapbox/tiletype.png)](http://travis-ci.org/mapbox/tiletype)
+[![build status](https://secure.travis-ci.com/mapbox/tiletype.png)](http://travis-ci.com/mapbox/tiletype)
 [![Coverage Status](https://coveralls.io/repos/mapbox/tiletype/badge.svg?branch=coverage&service=github)](https://coveralls.io/github/mapbox/tiletype?branch=coverage)
 
 detect common map tile formats from a buffer
